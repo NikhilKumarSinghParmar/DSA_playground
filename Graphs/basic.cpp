@@ -147,3 +147,169 @@ public:
 
 
 
+
+class Solution {
+// 433. Minimum Genetic Mutation
+public:
+    int minMutation(string start, string end, vector<string>& bank) {
+        if(!bank.size() && start!= end){return -1;}
+
+        string str="ACGT";
+        int m=bank[0].size();
+        int n=str.size();
+        unordered_set<string> st(bank.begin(),bank.end());
+        queue<pair<string,int>> q;
+        q.push({start,0});
+
+        while(!q.empty()){
+            auto [node,val]=q.front();
+            q.pop();
+            if(node == end){
+                return val;
+            }
+
+            for(int i=0;i<m;i++){
+                for(int j=0;j<n;j++){
+                    char t=node[i];
+                    node[i]=str[j];
+
+                    if(st.count(node)){
+                        q.push({node,val+1});
+                        st.erase(node);
+                    }
+
+                    node[i]=t;
+                }
+            }
+        }
+
+        return -1;
+    }
+};
+
+
+
+
+
+class Solution {
+// 127. Word Ladder
+public:
+    int ladderLength(string begin, string end, vector<string>& list) {
+        unordered_set<string> st(list.begin(),list.end());
+        queue<string> q;
+
+        q.push(begin);
+        int cnt=0;
+
+        while(!q.empty()){
+            ++cnt;
+            int n=q.size();
+            for(int i=0;i<n;i++){
+                string word = q.front();
+                q.pop();
+                // cout << word << " : " << cnt << endl;
+
+                if(word==end){return cnt;}
+
+                int n=word.size();
+                for(int i=0;i<n;i++){
+                    char ch=word[i];
+                    for(int j=0;j<26;j++){
+                        word[i]='a'+j;
+                        if(st.count(word)){
+                            q.push(word);
+                            st.erase(word);
+                        }
+                    }
+                    word[i]=ch;
+                }
+            }
+        }
+
+        return 0;
+    }
+};
+
+
+
+
+
+class Solution {
+// 2115. Find All Possible Recipes from Given Supplies
+public:
+    vector<string> findAllRecipes(vector<string>& recipes, vector<vector<string>>& ingredients, vector<string>& supplies) {
+        unordered_set<string> rec(recipes.begin(),recipes.end());
+        unordered_map<string,int> mp;
+        unordered_map<string,vector<string>> adj;
+        queue<string> q;
+
+        int n=recipes.size();
+        for(int i=0;i<n;i++){
+            string recipe=recipes[i];
+            for(auto ingredient:ingredients[i]){
+                mp[recipe]++;
+                adj[ingredient].push_back(recipe);
+            }
+        }
+
+        for(auto t:supplies){
+            q.push(t);
+        }
+
+        recipes.clear();
+
+        while(!q.empty()){
+            string ingredient=q.front();
+            q.pop();
+
+            for(auto recipe:adj[ingredient]){
+                mp[recipe]--;
+                if(mp[recipe]==0){
+                    q.push(recipe);
+                    if(rec.count(recipe)){
+                        recipes.push_back(recipe);
+                    }
+                }
+            }
+
+        }
+
+        return recipes;
+    }
+};
+
+
+
+
+class Solution {
+// 733. Flood Fill
+public:
+    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
+       int m=image.size();
+       int n=image[0].size();
+       int original_color=image[sr][sc];
+       if(original_color==color){
+        return image;
+       }
+       int dx[4]={-1,0,1,0};
+       int dy[4]={0,-1,0,1};
+        queue<pair<int,int>> q;
+       
+       q.push({sr,sc});
+        image[sr][sc]=color;
+
+       while(!q.empty()){
+            auto [x,y]=q.front();
+            q.pop();
+
+            for(int i=0;i<4;i++){
+                if((x+dx[i])>=0 && (x+dx[i])<m && (y+dy[i])>=0 && (y+dy[i])<n && image[x+dx[i]][y+dy[i]]==original_color){
+                    image[x+dx[i]][y+dy[i]]=color;
+                    q.push({x+dx[i],y+dy[i]});
+                }
+            }
+       }
+
+       return image;
+    }
+};
