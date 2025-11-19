@@ -237,3 +237,190 @@ public:
         return -1;
     }
 };
+
+
+
+
+
+#define pii pair<int,int>
+#define F first
+#define S second
+#define vi vector<int>
+#define vvi vector<vi>
+
+class Solution {
+// 542. 01 Matrix
+public:
+    vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+        int m=mat.size();
+        int n=mat[0].size();
+        
+        vvi ans(m,vi(n));
+        int dx[]={0,1,0,-1};
+        int dy[]={1,0,-1,0};
+
+        queue<pair<pii,int>> q;
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(mat[i][j]==0){
+                    q.push(make_pair(make_pair(i,j),0));
+                    // cout << i << " , " << j << endl;
+                }
+            }
+        }
+
+        while(!q.empty()){
+            auto front=q.front();
+            q.pop();
+
+            pii xy=front.F;
+            int val=front.S;
+
+            int x=xy.F;
+            int y=xy.S;
+
+            // cout << x << " , " << y << " : " <<  val << endl;
+
+            ans[x][y]=val;
+
+            for(int i=0;i<4;i++){
+                int a=x+dx[i];
+                int b=y+dy[i];
+
+                if(a>=0 && a<m && b>=0 && b<n && mat[a][b]==1){
+                    mat[a][b]=0;
+                    q.push(make_pair(make_pair(a,b),val+1));
+                }    
+            }   
+        }
+
+        return ans;
+    }
+};
+
+
+
+
+#define vi vector<int>
+#define vvi vector<vi>
+
+class Solution {
+// 2101. Detonate the Maximum Bombs
+public:
+    vvi adj;
+    vector<bool> visited;
+
+    bool in_range(int x1,int y1,int val,int x2,int y2){
+        return (1LL*(x1-x2)*(x1-x2) + 1LL*(y1-y2)*(y1-y2)) <=  1LL*val*val ;
+    }
+
+
+    int dfs(int u){
+        visited[u]=1;
+        int ans=1;
+
+        for(auto v:adj[u]){
+            if(!visited[v]){
+                ans += dfs(v);
+            }
+        }
+
+        return ans;
+    }
+
+
+
+    int maximumDetonation(vector<vector<int>>& bombs) {
+        int n=bombs.size();
+        adj.resize(n,{});
+        visited.resize(n);
+
+        for(int i=0;i<n;i++){
+            int x1=bombs[i][0];
+            int y1=bombs[i][1];
+            int val1=bombs[i][2];
+
+            for(int j=i+1;j<n;j++){
+                int x2=bombs[j][0];
+                int y2=bombs[j][1];
+                int val2=bombs[j][2];
+
+                if(in_range(x1,y1,val1,x2,y2)){
+                    adj[i].push_back(j);
+                }
+                if(in_range(x2,y2,val2,x1,y1)){
+                    adj[j].push_back(i);
+                }
+            }
+        }
+
+        int maxi=0;
+        for(int i=0;i<n;i++){
+            visited.assign(n,false);
+            int temp=dfs(i);
+
+            maxi=max(maxi,temp);
+        }      
+
+        return maxi;
+    }
+};
+
+
+
+
+
+
+#define vi vector<int>
+#define vvi vector<vi>
+
+class Solution {
+// 815. Bus Routes
+public:
+    unordered_map<int,vi> group;
+    unordered_set<int> visited;
+
+    int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {
+        if(source == target){return 0;}
+        
+        int n=routes.size();
+
+        for(int i=0;i<n;i++){
+            for(auto t:routes[i]){
+                group[t].push_back(i);
+            }
+        }
+
+        queue<int> q;
+        q.push(source);
+        int cnt=-1;
+
+        while(!q.empty()){
+            int sz=q.size();
+            ++cnt;
+
+            for(int i=0;i<sz;i++){
+                int front=q.front();
+                q.pop();
+
+                if(front==target){return cnt;}
+
+                for(auto grp:group[front]){
+                    if(!visited.count(grp)){
+                        visited.insert(grp);
+                        for(auto t:routes[grp]){
+                            q.push(t);
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+};
+
+
+
+
+
